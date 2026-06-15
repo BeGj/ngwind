@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+/*
+ * Tell Tailwind to scan the `ui` library's compiled templates so the utility
+ * classes used inside library components are emitted into the demo's CSS.
+ * In an external consuming app this would point at `node_modules/ui/**`.
+ */
+@source '../../ui/src/**/*.{html,ts}';
+
+/* Structural CSS required by CDK Overlay (Dialog + Tooltip positioning/backdrop). */
+@import '@angular/cdk/overlay-prebuilt.css';
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
