@@ -1,0 +1,77 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# Least privilege by default; each job opts into exactly what it needs.
+permissions: {}
+
+jobs:
+  # Maintains a release PR (CHANGELOG + version bump from Conventional Commits).
+  # Merging that PR tags the repo and creates the GitHub Release.
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  # Runs only when a release was just created. Publishes to npm via OIDC
+  # trusted publishing (no long-lived token) — but only after the same
+  # lint / format / test gates as CI have passed.
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write # required for npm OIDC trusted publishing + provenance
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: install deps
+        run: pnpm install --frozen-lockfile
+
+      # OIDC trusted publishing requires npm >= 11.5.1 (Node 22 ships npm 10).
+      - name: update npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: format check
+        run: pnpm format:check
+
+      - name: lint
+        run: pnpm lint
+
+      # build:lib compiles the library AND the ng-add/ng-update schematics into
+      # dist/ui — publishing without this would ship a broken `ng add ngwind`.
+      - name: build library
+        run: pnpm build:lib
+
+      - name: test
+        run: pnpm exec ng test demo --no-watch
+
+      - name: publish to npm
+        run: npm publish ./dist/ui --provenance --access public

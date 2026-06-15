@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: format check
+        run: pnpm format:check
+
+      - name: lint
+        run: pnpm lint
+
+      # The library must be built first: the demo (and its tests) import the
+      # compiled package from dist/ui, and a fresh checkout has no dist/ (it is
+      # gitignored). build:lib also compiles the ng-add/ng-update schematics.
+      - name: build library
+        run: pnpm build:lib
+
+      - name: test
+        run: pnpm exec ng test demo --no-watch

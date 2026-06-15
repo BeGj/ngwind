@@ -14,7 +14,7 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "ui": ["./dist/ui"]
+      "ngwind": ["./dist/ui"]
     }
   },
   "angularCompilerOptions": {

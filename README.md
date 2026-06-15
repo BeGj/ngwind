@@ -1,59 +1,65 @@
-# NgTailwindUi
+# ng-tailwind-ui
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.1.
+An Angular **UI library** built on [`@angular/cdk`](https://material.angular.dev/cdk) and
+[`@angular/aria`](https://angular.dev/), styled with **Tailwind CSS v4**, published to npm as
+**[`ngwind`](https://www.npmjs.com/package/ngwind)**. This is an Angular CLI workspace
+(Angular 22, pnpm) containing two projects:
 
-## Development server
+| Project             | Type        | Path            | Purpose                                    |
+| ------------------- | ----------- | --------------- | ------------------------------------------ |
+| [`ui`](projects/ui) | library     | `projects/ui`   | The publishable component library          |
+| `demo`              | application | `projects/demo` | Showcase app that consumes & verifies `ui` |
 
-To start a local development server, run:
+## Components
 
-```bash
-ng serve
-```
+- **Button** — styled native `<button>`/`<a>` directive (variants + sizes)
+- **Card** — surface with header / footer projection slots
+- **Dialog** — modal service over `@angular/cdk/dialog` (focus trap, a11y for free)
+- **Tooltip** — hover/focus tooltip over `@angular/cdk/overlay`
+- **Tabs** — headless `@angular/aria/tabs`, styled with Tailwind
+- **Accordion** — headless `@angular/aria/accordion`, styled with Tailwind
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+See [`projects/ui/README.md`](projects/ui/README.md) for the component API and the **required
+consumer Tailwind setup** (`@source` scanning + CDK overlay CSS).
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Install (consumers)
 
 ```bash
-ng build
+ng add ngwind
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+`ngwind` ships an `ng-add` schematic that installs the `@angular/cdk` / `@angular/aria` peer
+dependencies and wires the Tailwind `@source` scan + CDK overlay CSS into your global stylesheet.
+It also declares `ng-update` support for future migrations.
 
-## Running unit tests
+## Releasing
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Releases are automated with release-please and published to npm from GitHub Actions via OIDC
+trusted publishing. See [`PUBLISHING.md`](PUBLISHING.md) for the flow and one-time setup.
+
+## How styling reaches the library (important)
+
+The library ships **raw Tailwind utility classes** in its templates, not compiled CSS. The
+consuming app's Tailwind build must scan the library so those classes are emitted. The demo does
+this in [`projects/demo/src/styles.css`](projects/demo/src/styles.css):
+
+```css
+@import 'tailwindcss';
+@source '../../ui/src/**/*.{html,ts}'; /* scan the library templates */
+@import '@angular/cdk/overlay-prebuilt.css'; /* structural CSS for CDK overlays */
+```
+
+## Develop
 
 ```bash
-ng test
+pnpm install
+pnpm build:lib        # build the library + schematics first -> dist/ui (the demo imports `ngwind` from here)
+pnpm start            # serve the demo at http://localhost:4200
+pnpm ng test demo --no-watch   # unit tests (incl. Aria wrapper wiring)
+pnpm lint             # eslint
+pnpm format:check     # prettier
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+> Build the library before serving/testing the demo: the path mapping `"ngwind": ["./dist/ui"]`
+> (in `tsconfig.json`) resolves the library from its built output. `build:lib` also compiles the
+> `ng-add`/`ng-update` schematics shipped in the package.

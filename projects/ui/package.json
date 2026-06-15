@@ -1,13 +1,48 @@
 {
-  "name": "ui",
-  "version": "0.0.1",
+  "name": "ngwind",
+  "version": "0.1.0",
+  "description": "A headless-first Angular UI component library built on @angular/cdk and @angular/aria, styled with Tailwind CSS.",
+  "keywords": [
+    "angular",
+    "tailwind",
+    "tailwindcss",
+    "ui",
+    "components",
+    "cdk",
+    "aria",
+    "accessibility",
+    "headless"
+  ],
+  "homepage": "https://github.com/BeGj/ngwind#readme",
+  "bugs": {
+    "url": "https://github.com/BeGj/ngwind/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeGj/ngwind.git",
+    "directory": "projects/ui"
+  },
+  "license": "MIT",
+  "author": "BeGj <sikk1996@gmail.com>",
   "peerDependencies": {
     "@angular/common": "^22.0.0",
     "@angular/core": "^22.0.0",
-    "@angular/cdk": "^22.0.0"
+    "@angular/cdk": "^22.0.0",
+    "@angular/aria": "^22.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "schematics": "./schematics/collection.json",
+  "ng-update": {
+    "migrations": "./schematics/migrations/migration-collection.json",
+    "packageGroup": [
+      "ngwind"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
 }
