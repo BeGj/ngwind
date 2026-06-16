@@ -24,7 +24,7 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           config-file: release-please-config.json
@@ -44,18 +44,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
       - name: install deps
         run: pnpm install --frozen-lockfile
 
-      # OIDC trusted publishing requires npm >= 11.5.1 (Node 22 ships npm 10).
+      # OIDC trusted publishing requires npm >= 11.5.1; pin to latest to be safe.
       - name: update npm for trusted publishing
         run: npm install -g npm@latest
 
