@@ -5,6 +5,8 @@ An Angular **UI library** built on [`@angular/cdk`](https://material.angular.dev
 **[`ngwind`](https://www.npmjs.com/package/ngwind)**. This is an Angular CLI workspace
 (Angular 22, pnpm) containing two projects:
 
+**[Live demo →](https://begj.github.io/ngwind/)** (the `demo` app, deployed to GitHub Pages on every push to `main`)
+
 | Project             | Type        | Path            | Purpose                                    |
 | ------------------- | ----------- | --------------- | ------------------------------------------ |
 | [`ui`](projects/ui) | library     | `projects/ui`   | The publishable component library          |

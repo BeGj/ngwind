@@ -3,6 +3,8 @@
 A small Angular component library built on [`@angular/cdk`](https://material.angular.dev/cdk)
 and [`@angular/aria`](https://angular.dev/), styled with **Tailwind CSS v4** utility classes.
 
+**[Live demo →](https://begj.github.io/ngwind/)**
+
 | Component | Built on                  | Selector(s)                                                     |
 | --------- | ------------------------- | --------------------------------------------------------------- |
 | Button    | native element            | `button[tw-button]`, `a[tw-button]`                             |
