@@ -25,13 +25,21 @@ already exist**. So the very first publish is manual; every release after that i
 
 1. **Create the GitHub repo** `BeGj/ngwind`, set `main` as the default branch, and push this code.
 2. **Bootstrap the first publish locally** (creates `ngwind@0.1.0` on npm):
+
    ```bash
    pnpm install
    pnpm build:lib                 # builds the library AND the ng-add/ng-update schematics
    npm login                      # or use an automation token just for this step
-   npm publish ./dist/ui --access public
+   npm publish ./dist/ui --access public   # no --provenance: it only works from CI/OIDC
    git tag v0.1.0 && git push --tags   # anchors release-please to 0.1.0
    ```
+
+   > This first publish has **no provenance** — provenance can only be generated from a supported
+   > CI provider (GitHub Actions OIDC), not a local machine. That's expected: the release workflow
+   > passes `--provenance` so every _automated_ release is signed. (This is why the package's
+   > `publishConfig` does **not** set `provenance: true` — that would force it on the local publish
+   > too and fail with `Automatic provenance generation not supported for provider: null`.)
+
 3. **Configure the trusted publisher** on npm: npmjs.com → the `ngwind` package → _Settings_ →
    _Trusted Publisher_ → GitHub Actions, with:
    - Repository: `BeGj/ngwind`
